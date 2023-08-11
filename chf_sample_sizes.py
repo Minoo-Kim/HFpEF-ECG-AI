@@ -16,7 +16,7 @@ lab_events = pd.merge(lab_events, lab_events_id, on='itemid', how='left')
 print ("File reading complete")
 
 
-# In[113]:
+# In[155]:
 
 
 # extract patient IDs with 12-lead ECGs
@@ -29,7 +29,7 @@ print(len(ecg_ids)) # evaluates to 93
 print(ecg_ids)
 
 
-# In[114]:
+# In[156]:
 
 
 # total ICU population
@@ -43,7 +43,7 @@ print(len(icu_ids))
 print(icu_stays['subject_id'].nunique()) # e: 53034, p: 42264
 
 
-# In[115]:
+# In[157]:
 
 
 # filter every file with confirmed ICU stay
@@ -51,7 +51,7 @@ icd_codes = icd_codes[icd_codes['hadm_id'].isin(icu_ids)]
 lab_events = lab_events[lab_events['hadm_id'].isin(icu_ids)]
 
 
-# In[140]:
+# In[158]:
 
 
 # filter for HFpEF w/ ICD codes
@@ -65,11 +65,11 @@ print(len(hfpef_ids))
 print(hfpef_ids['subject_id'].nunique())
 
 
-# In[141]:
+# In[159]:
 
 
 probnp_total = lab_events[(lab_events['itemid'] == 50963)]
-probnp_total=probnp_total.dropna(subset=['hadm_id'])
+probnp_total = probnp_total.dropna(subset=['valuenum'])
 probnp_total = probnp_total.drop_duplicates('hadm_id')
 probnp_total_ids  = list(probnp_total.hadm_id)
 print(len(probnp_total_ids))
@@ -85,13 +85,13 @@ probnp_negative_ids = list(probnp_negative.hadm_id)
 print(len(probnp_negative_ids))
 
 
-# In[142]:
+# In[168]:
 
 
 # HFpEF: proBNP + ICD codes
 hfpef_icd_positive = hfpef_ids[hfpef_ids['hadm_id'].isin(probnp_positive_ids)]
 print(len (hfpef_icd_positive)) 
-print(hfpef_icd_positive['subject_id'].nunique()) # e: 1492, p: 1394
+print(hfpef_icd_positive['subject_id'].nunique()) # e: 1501, p: 1401
 
 # HFpEF: proBNP + ICD codes (false sample)
 hfpef_icd_negative = hfpef_ids[hfpef_ids['hadm_id'].isin(probnp_negative_ids)]
@@ -101,7 +101,7 @@ print(hfpef_icd_negative['subject_id'].nunique()) # e: 54, p: 54
 # HFpEF: no proBNP + ICD codes
 hfpef_icd_no_probnp = hfpef_ids[~hfpef_ids['hadm_id'].isin(probnp_total_ids)]
 print(len (hfpef_icd_no_probnp)) 
-print(hfpef_icd_no_probnp['subject_id'].nunique()) # e: 4497, p: 3616
+print(hfpef_icd_no_probnp['subject_id'].nunique()) # e: 4561, p: 3667
 
 # HFpEF: proBNP + ICD codes + ECG
 hfpef_icd_ecg = hfpef_icd_positive[hfpef_icd_positive['subject_id'].isin(ecg_ids)]
@@ -109,7 +109,7 @@ print(len (hfpef_icd_ecg))
 print(hfpef_icd_ecg['subject_id'].nunique()) # e: 4 p: 3
 
 
-# In[143]:
+# In[161]:
 
 
 # filter for HFrEF w/ ICD codes
@@ -123,31 +123,31 @@ print(len(hfref_ids))
 print(hfref_ids['subject_id'].nunique())
 
 
-# In[144]:
+# In[162]:
 
 
 # HFrEF: proBNP + ICD codes
 hfref_icd_positive = hfref_ids[hfref_ids['hadm_id'].isin(probnp_positive_ids)]
 print(len (hfref_icd_positive)) 
-print(hfref_icd_positive['subject_id'].nunique()) # e: 3611, p: 2741
+print(hfref_icd_positive['subject_id'].nunique()) # e: 1321, p: 1229
 
 # HFrEF: proBNP + ICD codes (false sample)
 hfref_icd_negative = hfref_ids[hfref_ids['hadm_id'].isin(probnp_negative_ids)]
 print(len (hfref_icd_negative)) 
-print(hfref_icd_negative['subject_id'].nunique()) # e: 85, p: 80
+print(hfref_icd_negative['subject_id'].nunique()) # e: 15, p: 15
 
 # HFrEF: no proBNP + ICD codes
 hfref_icd_no_probnp = hfref_ids[~hfref_ids['hadm_id'].isin(probnp_total_ids)]
 print(len (hfref_icd_no_probnp)) 
-print(hfref_icd_no_probnp['subject_id'].nunique()) # e: 204, p: 186
+print(hfref_icd_no_probnp['subject_id'].nunique()) # e: 4588, p: 3805
 
 # HFrEF: proBNP + ICD codes + ECG
 hfref_icd_ecg = hfref_icd_positive[hfref_icd_positive['subject_id'].isin(ecg_ids)]
 print(len (hfref_icd_ecg)) 
-print(hfref_icd_ecg['subject_id'].nunique()) # e: 2 p: 6
+print(hfref_icd_ecg['subject_id'].nunique()) # e: 1 p: 1
 
 
-# In[131]:
+# In[163]:
 
 
 # all ICD patients
@@ -163,12 +163,12 @@ print(len(icu_notin_icd)) # evaluates to 41019
 # no ICD but has proBNP
 icu_has_probnp = icu_notin_icd[icu_notin_icd['hadm_id'].isin(probnp_total_ids)]
 print(len(icu_has_probnp)) 
-print(icu_has_probnp['subject_id'].nunique()) # e: 2878, p: 2793
+print(icu_has_probnp['subject_id'].nunique()) # e: 2662, p: 2591
 
 # no ICD but proBNP >200
 icu_probnp_positive = icu_notin_icd[icu_notin_icd['hadm_id'].isin(probnp_positive_ids)]
 print(len(icu_probnp_positive))
-print(icu_probnp_positive['subject_id'].nunique()) # e: 2895, p: 2327
+print(icu_probnp_positive['subject_id'].nunique()) # e: 2404, p: 2342
 
 # no ICD but proBNP > 200 + ECGs
 icu_probnp_positive_ecg = icu_probnp_positive[icu_probnp_positive['subject_id'].isin(ecg_ids)]
@@ -178,7 +178,7 @@ print(icu_probnp_positive_ecg['subject_id'].nunique()) # e: 6, p: 6
 # no ICD but proBNP < 200
 icu_probnp_negative = icu_notin_icd[icu_notin_icd['hadm_id'].isin(probnp_negative_ids)]
 print(len(icu_probnp_negative))  
-print(icu_probnp_negative['subject_id'].nunique()) # e: 292, p: 256
+print(icu_probnp_negative['subject_id'].nunique()) # e: 258, p: 257
 
 # no ICD but proBNP >200 + ECGs
 icu_probnp_negative_ecg = icu_probnp_negative[icu_probnp_negative['subject_id'].isin(ecg_ids)]
@@ -186,13 +186,13 @@ print(len(icu_probnp_negative_ecg))
 print(icu_probnp_negative_ecg['subject_id'].nunique()) # e: 1, p: 1
 
 
-# In[145]:
+# In[164]:
 
 
 # no ICD AND no proBNP
 icu_no_icd_no_probnp = icu_notin_icd[~icu_notin_icd['hadm_id'].isin(probnp_total_ids)]
 print(len(icu_no_icd_no_probnp)) 
-print(icu_no_icd_no_probnp['subject_id'].nunique()) # e: 38141, p: 32535
+print(icu_no_icd_no_probnp['subject_id'].nunique()) # e: 38357, p: 32690
 
 icu_no_icd_no_probnp2 = icu_notin_icd[icu_notin_icd['hadm_id'].isin(probnp_total_ids)]
 print(len(icu_no_icd_no_probnp2)) 
@@ -201,7 +201,7 @@ print(len(icu_no_icd_no_probnp2))
 # no ICD AND no proBNP + ECGs
 icu_no_icd_no_probnp_ecg = icu_no_icd_no_probnp[icu_no_icd_no_probnp['subject_id'].isin(ecg_ids)]
 print(len(icu_no_icd_no_probnp_ecg)) 
-print(icu_no_icd_no_probnp_ecg['subject_id'].nunique()) # e: 82, p: 67
+print(icu_no_icd_no_probnp_ecg['subject_id'].nunique()) # e: 76, p: 67
 
 
 # In[ ]:
@@ -210,11 +210,16 @@ print(icu_no_icd_no_probnp_ecg['subject_id'].nunique()) # e: 82, p: 67
 
 
 
-# In[ ]:
+# In[170]:
 
 
-# experiment with sample 1: save the ids to a dataframe and view it locally
-# important: see that the dataframe updates
+# export csvs for feature extraction
+
+hfpef_icd_ecg.to_csv("hfpef_icd_ecg.csv", sep=',', index=False, encoding='utf-8')
+hfref_icd_ecg.to_csv("hfref_icd_ecg.csv", sep=',', index=False, encoding='utf-8')
+icu_probnp_positive_ecg.to_csv("icu_probnp_positive_ecg.csv", sep=',', index=False, encoding='utf-8')
+icu_probnp_negative_ecg.to_csv("icu_probnp_negative_ecg.csv", sep=',', index=False, encoding='utf-8')
+icu_no_icd_no_probnp_ecg.to_csv("icu_no_icd_no_probnp_ecg.csv", sep=',', index=False, encoding='utf-8')
 
 
 # In[ ]:
